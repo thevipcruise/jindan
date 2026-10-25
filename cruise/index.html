@@ -123,6 +123,29 @@ header.top.on{display:block}
 .mb-skip.sel{color:var(--ink);font-weight:800;text-decoration:none}
 .mbline{margin:12px 0 0;font-size:14px;line-height:1.5;opacity:.95}
 .mbline b{font-size:15px;letter-spacing:.04em}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.popt{position:relative;border:3px solid transparent;border-radius:18px;overflow:hidden;padding:0;background:#ddd;cursor:pointer;aspect-ratio:4/5;font-family:inherit;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.popt:active{transform:scale(.98)}
+.popt img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.popt span{position:absolute;left:0;right:0;bottom:0;padding:30px 12px 12px;background:linear-gradient(180deg,transparent,rgba(10,16,32,.85));color:#fff;text-align:left}
+.popt b{display:block;font-size:16px}
+.popt small{display:block;font-size:12px;opacity:.9;line-height:1.4;margin-top:2px}
+.popt.sel{border-color:var(--gold)}
+.popt.sel::after{content:"✓";position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--ink);display:grid;place-items:center;font-weight:900}
+.popt.wide{grid-column:1/-1;aspect-ratio:16/8}
+.months{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px}
+.mon{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:12px 4px 10px;font-family:inherit;cursor:pointer;color:var(--ink);text-align:center}
+.mon b{display:block;font-size:17px}
+.mon small{display:block;font-size:11px;color:var(--sub);margin-top:2px}
+.mon.off{opacity:.45}
+.mon.off small{color:#C2412D}
+.mon.sel{border-color:var(--teal);background:var(--teal);color:#fff;opacity:1}
+.mon.sel small{color:rgba(255,255,255,.8)}
+.season{font-size:13px;color:var(--teal);background:var(--teal-soft);border-radius:12px;padding:10px 12px;margin-bottom:14px;line-height:1.5}
+.unk{display:block;width:100%;border:2px dashed var(--line);background:none;border-radius:14px;padding:12px;font-family:inherit;font-size:14px;color:var(--sub);cursor:pointer;margin-bottom:16px}
+.unk.sel{border-style:solid;border-color:var(--teal);color:var(--teal);font-weight:800}
+.credit{font-size:10.5px;color:var(--sub);text-align:center;margin:22px 0 0;line-height:1.5}
+.credit summary{cursor:pointer}
 .modal{position:fixed;inset:0;background:rgba(15,22,40,.6);display:none;align-items:flex-end;justify-content:center;z-index:20}
 .modal.on{display:flex;animation:fade .2s both}
 @keyframes fade{from{opacity:0}}
@@ -199,11 +222,25 @@ const STEPS = [
     {code:"부모님", ico:"👵", label:"부모님 효도여행", desc:"칠순·환갑, 걷는 거리는 줄이고 감동은 크게"},
     {code:"자녀가족", ico:"👨‍👩‍👧", label:"초등 자녀 동반 가족여행", desc:"아이도 어른도 지루할 틈 없이"},
     {code:"커플", ico:"🥂", label:"부부·커플 낭만 여행", desc:"선셋과 디너, 둘만의 시간"},
-    {code:"친구", ico:"👯", label:"친구들과 우정여행", desc:"맛집·쇼·파티, 추억 몰아 만들기"}]},
-  {key:"일정", title:"일정과 해역은\n어느 쪽이 끌리세요?", hint:"휴가 일수에 맞춰 골라주세요.", opts:[
-    {code:"일본대만", ico:"🗾", label:"4~6일 · 일본·대만 근거리", desc:"고베·사세보·오키나와 등, 부담 없는 첫 크루즈"},
-    {code:"동남아", ico:"🌴", label:"5~7일 · 싱가포르·동남아", desc:"따뜻한 바다, 휴양과 미식"},
-    {code:"지중해알래스카", ico:"🏔️", label:"7일 이상 · 지중해·알래스카", desc:"인생 여행, 버킷리스트 해역"}]},
+    {code:"친구", ico:"👯", label:"친구들과 우정여행", desc:"맛집·쇼·파티, 추억 몰아 만들기"},
+    {code:"혼자", ico:"🧳", label:"혼자 떠나는 여행", desc:"내 속도대로, 안전하고 자유롭게"}]},
+  {key:"해역", photo:true, title:"어느 바다로\n떠나고 싶으세요?", hint:"나라(해역)를 골라 주세요. 날짜는 다음에 따로 골라요.", opts:[
+    {code:"일본", img:"img/japan.jpg", label:"일본", desc:"고베·후쿠오카·오키나와"},
+    {code:"대만", img:"img/taiwan.jpg", label:"대만", desc:"기륭·지우펀·타이베이"},
+    {code:"동남아", img:"img/sea.jpg", label:"싱가포르·동남아", desc:"싱가포르·페낭·푸켓"},
+    {code:"지중해", img:"img/med.jpg", label:"지중해", desc:"그리스·이탈리아·스페인"},
+    {code:"알래스카", img:"img/alaska.jpg", label:"알래스카", desc:"빙하·피오르 · 5~9월", wide:true}]},
+  {key:"기간", title:"며칠 정도\n다녀오고 싶으세요?", hint:"휴가 일수에 맞춰 골라 주세요.", opts:[
+    {code:"3~4박", ico:"🌙", label:"3~4박 · 짧고 가볍게", desc:"주말 붙여 떠나는 첫 크루즈"},
+    {code:"5~6박", ico:"🌗", label:"5~6박 · 여유 있게", desc:"기항지 2~3곳 + 바다 위 하루"},
+    {code:"7~9박", ico:"🌕", label:"7~9박 · 제대로", desc:"먼 바다도 가능한 일정"},
+    {code:"10박이상", ico:"🌌", label:"10박 이상 · 인생 여행", desc:"버킷리스트 해역"}]},
+  {key:"출발", months:true, title:"갈 수 있는 달을\n모두 체크해 주세요", hint:"여러 달을 골라도 돼요. 그 안에서 출항 일정을 찾아 드려요."},
+  {key:"객실", photo:true, title:"어떤 방에서\n지내고 싶으세요?", hint:"객실은 여행 만족도를 크게 바꿔요.", opts:[
+    {code:"인사이드", img:"img/inside.jpg", label:"인사이드", desc:"창 없는 안쪽 방 · 가장 합리적"},
+    {code:"오션뷰", img:"img/oceanview.jpg", label:"오션뷰", desc:"창으로 바다가 보이는 방"},
+    {code:"발코니", img:"img/balcony.jpg", label:"발코니", desc:"나만의 테라스에서 바다를"},
+    {code:"스위트", img:"img/suite.jpg", label:"스위트", desc:"넓은 거실 · 전용 혜택"}]},
   {key:"기항지", title:"배에서 내리면\n어떻게 보내고 싶으세요?", hint:"기항지 반나절 코스의 방향이 정해져요.", opts:[
     {code:"미식쇼핑", ico:"🛍️", label:"항구 주변 미식·쇼핑·산책", desc:"이동 피로 없이 가볍게"},
     {code:"역사랜드마크", ico:"🏯", label:"핵심 랜드마크와 역사 투어", desc:"여기까지 왔으면 꼭 봐야 할 곳"},
@@ -214,14 +251,19 @@ const STEPS = [
     {code:"키즈가족", ico:"🧸", label:"키즈 시설·가족 체험 중심", desc:"아이가 신나야 부모도 쉰다"}]},
   {key:"컬러", final:true, title:"마지막! 여행자의\n휴먼컬러를 찾을 차례예요", hint:"대표 여행자의 생년월일로 여행 기질을 봅니다."}
 ];
+// 해역별 주요 운항 시즌(월) — 밖의 달은 「운항 적음」으로 흐리게
+const SEASON = {알래스카:{m:[5,6,7,8,9], txt:"알래스카는 5~9월에만 운항해요."}, 지중해:{m:[4,5,6,7,8,9,10], txt:"지중해는 4~10월이 주 시즌이에요."},
+  일본:{m:null, txt:"일본은 1년 내내 떠날 수 있어요. 8~9월은 태풍으로 일정이 바뀔 수 있어요."}, 대만:{m:null, txt:"대만은 1년 내내 떠날 수 있어요. 7~9월은 태풍 시즌이에요."},
+  동남아:{m:null, txt:"싱가포르·동남아는 1년 내내 떠날 수 있어요."}};
 const PALETTE = [
-  {code:"에메랄드",hex:"#119A7E"},{code:"아쿠아민트",hex:"#7FD6C8"},{code:"사파이어",hex:"#2C5FB3"},{code:"딥네이비",hex:"#1B2440"},
-  {code:"선셋코랄",hex:"#F07A5A"},{code:"샴페인골드",hex:"#D6B46A"},{code:"샌드베이지",hex:"#DCC9A6"},{code:"펄화이트",hex:"#F7F4EE"}
+  {code:"에메랄드",hex:"#00A86B"},{code:"아쿠아민트",hex:"#00D1C1"},{code:"사파이어",hex:"#0047FF"},{code:"딥네이비",hex:"#001F7A"},
+  {code:"선셋코랄",hex:"#FF4A1C"},{code:"샴페인골드",hex:"#FFC400"},{code:"샌드베이지",hex:"#E9A84C"},{code:"펄화이트",hex:"#FFFFFF"}
 ];
 
 const MBTI_PAIRS = [["E","외향"],["I","내향"],["S","감각"],["N","직관"],["T","사고"],["F","감정"],["J","판단"],["P","인식"]];
 const HC_MBTI = {GAP:"ENTJ",EUL:"ESFJ",BYEONG:"ENFP",JEONG:"INFJ",MU_A:"ESTJ",MU_B:"INTJ",GI_A:"ISFJ",GI_B:"ISTJ",GYEONG:"ESTP",SIN:"ISFP",IM:"ENTP",GYE:"INFP"};
 const MBTI_NICK = {ISTJ:"완벽 일정 설계자",ISFJ:"동행 컨디션 지킴이",INFJ:"의미를 찾는 순례자",INTJ:"전략적 루트 플래너",ISTP:"즉흥 장인 탐험가",ISFP:"감성 포토 수집가",INFP:"나만의 쉼 찾는 여행자",INTP:"이색 테마 탐구자",ESTP:"액티비티 헌터",ESFP:"파티 분위기 메이커",ENFP:"설렘 수집가",ENTP:"새 항로 개척자",ESTJ:"일정 리더",ESFJ:"모두가 행복한 조율가",ENFJ:"추억 연출가",ENTJ:"버킷리스트 정복자"};
+const CREDIT = `<details class="credit"><summary>사진 출처</summary>일본: 663highland (CC BY 2.5) · 대만: Sunkenbean (CC BY-SA 4.0) · 싱가포르: Wolfgang Holzem (CC BY 3.0) · 지중해: Meersan (CC BY-SA 3.0) · 알래스카: Sam Glover (CC BY-SA 2.0) · 인사이드·스위트: CruiseSource.us (CC BY-SA 2.0) · 오션뷰: Un-Cruise Adventures (CC BY-SA 3.0) · 발코니: Thank You (23 Millions+) views (CC BY 2.0) — Wikimedia Commons · Flickr</details>`;
 /* ================= 화면 ================= */
 const stage = document.getElementById("stage");
 const topEl = document.getElementById("top");
@@ -248,10 +290,10 @@ function intro(){
   show(`<div class="hero">
       <div class="logo">Eclat Passage<small>CRUISE PLANNER</small></div>
       <h1>내 스케줄과 동행자의 체력까지,<br><em>나만의 크루즈</em>를 설계해요</h1>
-      <p>5가지 질문과 여행자 휴먼컬러로<br>선사·선박·기항지·선상 24시간을 맞춰 드립니다.</p>
+      <p>동행자·나라·날짜·객실까지 8가지 질문과 여행자 휴먼컬러로<br>선사·선박·기항지·선상 24시간을 맞춰 드립니다.</p>
     </div>
     <div class="intro-body">
-      <div class="meta"><span>⏱ 1분</span><span>⚓ 5문항</span><span>🎨 휴먼컬러</span></div>
+      <div class="meta"><span>⏱ 1분</span><span>⚓ 8문항</span><span>🎨 휴먼컬러</span></div>
       <button class="btn amber" id="start">플래너 시작하기</button>
       <p class="sig">설계 · <b>크루즈마스터 스칼렛</b></p>
     </div>`).querySelector("#start").onclick = () => go(0);
@@ -261,18 +303,57 @@ function go(i, dir){
   cur = i; setBar(i);
   const s = STEPS[i];
   if(s.final) return finalStep(dir);
-  const el = show(`<div class="q">
-    <h2>${s.title.replace("\n","<br>")}</h2><p class="hint">${s.hint}</p>
-    <div class="opts">${s.opts.map(o=>`
+  if(s.months) return monthStep(dir);
+  const head = `<h2>${s.title.replace("\n","<br>")}</h2><p class="hint">${s.hint}</p>`;
+  const body = s.photo
+    ? `<div class="pgrid">${s.opts.map(o=>`<button class="popt opt${o.wide?" wide":""}${ans[s.key]===o.code?" sel":""}" data-c="${o.code}"><img src="${o.img}" alt="${o.label}"><span><b>${o.label}</b><small>${o.desc}</small></span></button>`).join("")}</div>`
+    : `<div class="opts">${s.opts.map(o=>`
       <button class="opt${ans[s.key]===o.code?" sel":""}" data-c="${o.code}">
         <span class="ico">${o.ico}</span><span><b>${o.label}</b><small>${o.desc}</small></span>
-      </button>`).join("")}</div></div>`, dir);
+      </button>`).join("")}</div>`;
+  const el = show(`<div class="q">${head}${body}</div>`, dir);
   el.querySelectorAll(".opt").forEach(b => b.onclick = () => {
     el.querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));
     b.classList.add("sel");
     ans[s.key] = b.dataset.c;
     setTimeout(() => go(i+1), 260);
   });
+}
+
+function nextMonths(){
+  const out = [], now = new Date();
+  for(let k = 1; k <= 12; k++){
+    const d = new Date(now.getFullYear(), now.getMonth() + k, 1);
+    out.push({y:d.getFullYear(), m:d.getMonth()+1, code:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`});
+  }
+  return out;
+}
+function monthStep(dir){
+  const s = STEPS[cur], sea = SEASON[ans["해역"]] || {m:null, txt:""};
+  const sel = new Set((ans["출발"]||"").split(",").filter(x => x && x !== "미정"));
+  let yPrev = null;
+  const el = show(`<div class="q">
+    <h2>${s.title.replace("\n","<br>")}</h2><p class="hint">${s.hint}</p>
+    ${sea.txt ? `<div class="season">⚓ ${sea.txt}</div>` : ""}
+    <div class="months">${nextMonths().map(o => {
+      const off = sea.m && !sea.m.includes(o.m);
+      const yl = o.y !== yPrev ? `${o.y}년` : ""; yPrev = o.y;
+      return `<button class="mon${off?" off":""}${sel.has(o.code)?" sel":""}" data-c="${o.code}"><b>${o.m}월</b><small>${off?(yl?yl+" · 운항 적음":"운항 적음"):(yl||"&nbsp;")}</small></button>`;
+    }).join("")}</div>
+    <button class="unk${ans["출발"]==="미정"?" sel":""}" id="unk">아직 날짜를 몰라요</button>
+    <button class="btn amber" id="next" disabled>다음</button>
+  </div>`, dir);
+  const nx = el.querySelector("#next"), unk = el.querySelector("#unk");
+  const sync = () => {
+    el.querySelectorAll(".mon").forEach(b => b.classList.toggle("sel", sel.has(b.dataset.c)));
+    const v = sel.size ? [...sel].sort().join(",") : (unk.classList.contains("sel") ? "미정" : "");
+    ans["출발"] = v; nx.disabled = !v;
+    nx.textContent = sel.size ? `다음 (${sel.size}개 달 선택)` : "다음";
+  };
+  el.querySelectorAll(".mon").forEach(b => b.onclick = () => { sel.has(b.dataset.c) ? sel.delete(b.dataset.c) : sel.add(b.dataset.c); unk.classList.remove("sel"); sync(); });
+  unk.onclick = () => { sel.clear(); unk.classList.toggle("sel"); sync(); };
+  nx.onclick = () => go(cur + 1);
+  sync();
 }
 
 function validDate(v){
@@ -329,7 +410,7 @@ function loading(){
 }
 
 function buildCode(){
-  return `${CODE_TAG} 동행:${ans["동행"]} / 일정:${ans["일정"]} / 기항지:${ans["기항지"]} / 선상:${ans["선상"]} / 생년월일:${ans["생년월일"]} / 컬러:${ans["컬러"]}${ans["MBTI"]?` / MBTI:${ans["MBTI"]}`:""}`;
+  return `${CODE_TAG} 동행:${ans["동행"]} / 해역:${ans["해역"]} / 기간:${ans["기간"]} / 출발:${ans["출발"]} / 객실:${ans["객실"]} / 기항지:${ans["기항지"]} / 선상:${ans["선상"]} / 생년월일:${ans["생년월일"]} / 컬러:${ans["컬러"]}${ans["MBTI"]?` / MBTI:${ans["MBTI"]}`:""}`;
 }
 
 function result(){
@@ -339,7 +420,7 @@ function result(){
   const mbLine = ans["MBTI"]
     ? `<p class="mbline">내 MBTI <b>${mt}</b> × ${c.name} = <b>${MBTI_NICK[mt]}</b>형 여행자</p>`
     : `<p class="mbline">MBTI로 치면 <b>${mt}</b> 결 · ${MBTI_NICK[mt]}</p>`;
-  const sections = ["여행자 휴먼컬러 스타일 & 동행자 체력·호흡 궁합","맞춤 크루즈 선사 & 선박 추천","추천 기항지 & 피로도 0% 반나절 코스","스칼렛의 선상 24시간 황금 스케줄표"];
+  const sections = ["여행자 휴먼컬러 스타일 & 동행자 체력·호흡 궁합","맞춤 선사·선박 & 출발 시기·객실","추천 기항지 & 피로도 0% 반나절 코스","스칼렛의 선상 24시간 황금 스케줄표"];
   const fake = (n) => Array.from({length:n},(_,i)=>`<div class="ln" style="width:${92-(i*13)%40}%"></div>`).join("");
   const el = show(`<div class="res">
     <div class="kicker">Your Traveler Color</div>
@@ -349,12 +430,13 @@ function result(){
     </div>
     <div class="locked">
       <div class="preview">${sections.map((t,i)=>`<div class="sec"><h4>${i+1}. ${t}</h4>${fake(2)}${i===3?`<div class="tbl">${"<span></span>".repeat(10)}</div>`:fake(1)}</div>`).join("")}</div>
-      <div class="lockover"><div class="lk">🔒</div><b>크루즈 설계표 4개 섹션이 잠겨 있어요</b><span>추천 선박, 기항지 반나절 코스,<br>선상 24시간 스케줄표까지 이미지로 받아보세요.</span></div>
+      <div class="lockover"><div class="lk">🔒</div><b>크루즈 설계표 4개 섹션이 잠겨 있어요</b><span>추천 선박과 객실, 출발 시기, 기항지 반나절 코스,<br>선상 24시간 스케줄표까지 이미지로 받아보세요.</span></div>
     </div>
     <ul class="toc">${sections.map((t,i)=>`<li><em>${i+1}</em>${t}</li>`).join("")}</ul>
     <button class="btn amber" id="getFull">내 상세 진단서 전체 받기</button>
     <p class="note">버튼을 누르면 진단코드가 복사되고 스칼렛 카카오채널이 열려요.<br>붙여넣기만 하면 크루즈 설계표 이미지를 보내드립니다.</p>
     <button class="retry" id="retry">처음부터 다시 하기</button>
+    ${CREDIT}
   </div>`);
   el.querySelector("#getFull").onclick = getFull;
   el.querySelector("#retry").onclick = () => { for(const k in ans) delete ans[k]; intro(); };
