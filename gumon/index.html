@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>도쌤 학습습관 진단</title>
+<meta name="description" content="1분, 5문항으로 알아보는 나의 학습 기질과 하루 10분 습관 설계">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* ===== 설정: 링크만 바꾸면 됩니다 ===== */
+:root{
+  --bg:#FBF8F1; --card:#FFFFFF; --ink:#23324A; --sub:#6B7385; --line:#E8E2D4;
+  --accent:#E8734A; --accent-soft:#FCE9E0; --sage:#4C8C7A; --sage-soft:#E3F0EB;
+  --radius:18px; --shadow:0 6px 24px rgba(35,50,74,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;}
+body{min-height:100vh;min-height:100dvh;display:flex;justify-content:center}
+.app{width:100%;max-width:480px;padding:0 16px 40px;position:relative;overflow:hidden}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 10px;display:none}
+header.top.on{display:block}
+.toprow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.back{border:0;background:var(--card);width:38px;height:38px;border-radius:12px;box-shadow:var(--shadow);font-size:18px;color:var(--ink);cursor:pointer}
+.back:disabled{opacity:.3}
+.stepno{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.02em}
+.brand{margin-left:auto;font-size:12px;color:var(--sub);font-weight:600}
+.bar{height:8px;background:#EDE7DA;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sage),var(--accent));border-radius:99px;transition:width .5s cubic-bezier(.4,1.4,.5,1)}
+.screen{display:none;animation:in .45s cubic-bezier(.2,.8,.2,1) both}
+.screen.on{display:block}
+.screen.out{animation:out .25s ease both}
+@keyframes in{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
+@keyframes out{to{opacity:0;transform:translateX(-36px)}}
+.screen.back-in{animation:inb .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes inb{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
+
+/* intro */
+.hero{padding:48px 4px 0;text-align:center}
+.badge{display:inline-block;background:var(--sage-soft);color:var(--sage);font-weight:700;font-size:12px;padding:6px 12px;border-radius:99px}
+.hero h1{font-size:28px;line-height:1.35;margin:18px 0 12px;letter-spacing:-.02em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{color:var(--sub);line-height:1.6;margin:0 0 26px;font-size:15px}
+.hero-art{margin:6px auto 26px;width:180px;height:180px;border-radius:50%;background:conic-gradient(#2F6B3F,#7FB8A4,#E2553B,#F08A6C,#C8693F,#7A5A43,#E7B53C,#CDB89A,#9AA3AD,#F1EEE8,#1F3A68,#8FB3D9,#2F6B3F);display:grid;place-items:center;box-shadow:var(--shadow)}
+.hero-art span{width:118px;height:118px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-weight:800;font-size:15px;line-height:1.35}
+.meta{display:flex;justify-content:center;gap:8px;margin-bottom:26px;flex-wrap:wrap}
+.meta span{background:var(--card);border:1px solid var(--line);padding:7px 12px;border-radius:99px;font-size:13px;color:var(--sub)}
+.btn{display:block;width:100%;border:0;border-radius:16px;padding:18px;font-size:17px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--ink);color:#fff;box-shadow:0 8px 20px rgba(35,50,74,.22);transition:transform .15s}
+.btn:active{transform:scale(.98)}
+.btn.accent{background:var(--accent);box-shadow:0 8px 20px rgba(232,115,74,.35)}
+.btn:disabled{background:#C9C4B8;box-shadow:none;cursor:not-allowed}
+
+/* question */
+.q{padding-top:18px}
+.q h2{font-size:23px;line-height:1.4;margin:0 0 6px;letter-spacing:-.02em}
+.q .hint{color:var(--sub);font-size:14px;margin:0 0 22px}
+.opts{display:grid;gap:12px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;width:100%;border:2px solid transparent;background:var(--card);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow);cursor:pointer;font-family:inherit;color:var(--ink);transition:transform .15s,border-color .15s}
+.opt:active{transform:scale(.98)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt .ico{flex:none;width:48px;height:48px;border-radius:14px;background:var(--bg);display:grid;place-items:center;font-size:24px}
+.opt b{display:block;font-size:16.5px;margin-bottom:3px}
+.opt small{display:block;color:var(--sub);font-size:13.5px;line-height:1.45}
+
+/* last step */
+.field{background:var(--card);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow);margin-bottom:14px}
+.field label{display:block;font-weight:800;font-size:15px;margin-bottom:4px}
+.field .lh{display:block;color:var(--sub);font-size:13px;margin-bottom:12px}
+.field input{width:100%;font-size:22px;font-family:inherit;font-weight:700;letter-spacing:.12em;padding:14px;border:2px solid var(--line);border-radius:12px;color:var(--ink);background:var(--bg);outline:none;text-align:center}
+.field input:focus{border-color:var(--sage)}
+.err{color:#C2412D;font-size:13px;margin-top:8px;min-height:18px}
+.pal{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sw{border:0;background:none;padding:0;cursor:pointer;font-family:inherit;color:var(--ink);font-size:12.5px;font-weight:600}
+.sw i{display:block;aspect-ratio:1;border-radius:16px;margin-bottom:6px;border:3px solid #fff;box-shadow:0 0 0 1px var(--line);transition:transform .15s,box-shadow .15s;position:relative}
+.sw.sel i{transform:scale(1.04);box-shadow:0 0 0 3px var(--ink)}
+.sw.sel i::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:22px;font-weight:900;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.sw:disabled{opacity:.25;cursor:not-allowed}
+
+/* loading */
+.loading{text-align:center;padding-top:30vh}
+.spinner{width:84px;height:84px;margin:0 auto 26px;border-radius:50%;background:conic-gradient(var(--accent),var(--sage),var(--accent));animation:spin 1s linear infinite;-webkit-mask:radial-gradient(farthest-side,transparent 70%,#000 71%);mask:radial-gradient(farthest-side,transparent 70%,#000 71%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading h3{font-size:20px;margin:0 0 8px}
+.loading p{color:var(--sub);font-size:14px;margin:0;min-height:20px}
+
+/* result */
+.res{padding-top:28px}
+.res .kicker{font-size:13px;color:var(--sub);font-weight:700;text-align:center}
+.colorcard{margin:14px 0 18px;border-radius:24px;padding:28px 20px 24px;text-align:center;color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.colorcard::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.12);top:-120px;right:-80px}
+.colorcard .en{font-size:12px;letter-spacing:.2em;opacity:.85;font-weight:700}
+.colorcard h2{font-size:30px;margin:6px 0 4px;letter-spacing:-.02em}
+.colorcard .sym{font-size:14px;opacity:.9}
+.colorcard .one{margin:18px 0 0;background:rgba(255,255,255,.18);border-radius:14px;padding:14px;font-size:16px;font-weight:700;line-height:1.5}
+.colorcard.light{color:var(--ink)}
+.colorcard.light .one{background:rgba(35,50,74,.07)}
+.locked{position:relative;border-radius:var(--radius);overflow:hidden;background:var(--card);box-shadow:var(--shadow);margin-bottom:18px}
+.preview{padding:20px 18px;filter:blur(5px);user-select:none;pointer-events:none}
+.preview h4{margin:0 0 8px;font-size:15px}
+.preview .ln{height:10px;border-radius:5px;background:#E6E0D3;margin:7px 0}
+.preview .sec{margin-bottom:18px}
+.preview .chips{display:flex;gap:6px;margin:8px 0}
+.preview .chips span{height:22px;width:64px;border-radius:99px;background:var(--accent-soft)}
+.lockover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(251,248,241,.2),rgba(251,248,241,.85));text-align:center;padding:20px}
+.lockover .lk{width:56px;height:56px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:24px;margin-bottom:12px}
+.lockover b{font-size:17px;margin-bottom:6px}
+.lockover span{font-size:13.5px;color:var(--sub);line-height:1.5}
+.toc{list-style:none;padding:0;margin:0 0 18px;display:grid;gap:8px}
+.toc li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:14px;display:flex;gap:10px;align-items:center}
+.toc li em{font-style:normal;flex:none;width:24px;height:24px;border-radius:8px;background:var(--sage-soft);color:var(--sage);display:grid;place-items:center;font-weight:800;font-size:12px}
+.toc li::after{content:"🔒";margin-left:auto;font-size:12px}
+.note{font-size:12.5px;color:var(--sub);text-align:center;margin:12px 0 0;line-height:1.5}
+.retry{display:block;margin:16px auto 0;background:none;border:0;color:var(--sub);text-decoration:underline;font-family:inherit;font-size:13px;cursor:pointer}
+
+.mbti-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mbti-col{display:grid;gap:6px}
+.mb-b{border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 0;font-family:inherit;font-size:17px;font-weight:800;color:var(--ink);cursor:pointer}
+.mb-b small{display:block;font-size:10.5px;font-weight:600;color:var(--sub);margin-top:2px}
+.mb-b.sel{border-color:var(--ink);background:var(--ink);color:#fff}
+.mb-b.sel small{color:rgba(255,255,255,.75)}
+.mb-skip{display:block;margin:10px auto 0;background:none;border:0;font-family:inherit;font-size:13px;color:var(--sub);text-decoration:underline;cursor:pointer}
+.mb-skip.sel{color:var(--ink);font-weight:800;text-decoration:none}
+.mbline{margin:12px 0 0;font-size:14px;line-height:1.5;opacity:.95}
+.mbline b{font-size:15px;letter-spacing:.04em}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(20,26,40,.55);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.modal.on{display:flex;animation:fade .2s both}
+@keyframes fade{from{opacity:0}}
+.sheet{width:100%;max-width:480px;background:var(--card);border-radius:24px 24px 0 0;padding:26px 20px calc(24px + env(safe-area-inset-bottom));animation:up .3s cubic-bezier(.2,.8,.2,1) both}
+@keyframes up{from{transform:translateY(40px)}}
+.sheet .ok{width:54px;height:54px;border-radius:50%;background:var(--sage);color:#fff;display:grid;place-items:center;font-size:26px;margin:0 auto 14px}
+.sheet h3{text-align:center;font-size:19px;margin:0 0 6px;line-height:1.4}
+.sheet p{text-align:center;color:var(--sub);font-size:14px;margin:0 0 16px;line-height:1.5}
+.code{background:var(--bg);border:1px dashed var(--line);border-radius:12px;padding:12px;font-size:13px;line-height:1.5;word-break:keep-all;margin-bottom:14px;user-select:all}
+.row2{display:grid;grid-template-columns:1fr 1.6fr;gap:10px}
+.btn.ghost{background:var(--bg);color:var(--ink);box-shadow:none;border:1px solid var(--line);font-size:15px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top" id="top">
+    <div class="toprow">
+      <button class="back" id="backBtn" aria-label="이전">←</button>
+      <span class="stepno" id="stepNo">STEP 1 / 5</span>
+      <span class="brand">도쌤 학습습관 진단</span>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+  </header>
+  <main id="stage"></main>
+</div>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <div class="ok">✓</div>
+    <h3>진단코드가 복사되었습니다!</h3>
+    <p>열리는 채팅창에 <b>붙여넣기</b>만 해주세요.<br>도쌤이 정밀 진단서를 만들어 보내드려요.</p>
+    <div class="code" id="codeBox"></div>
+    <div class="row2">
+      <button class="btn ghost" id="copyAgain">다시 복사</button>
+      <button class="btn accent" id="goChat">채팅창 열기 <span id="cd"></span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= 설정 ================= */
+const CHAT_URL = "https://talk.naver.com/W4JMTZ";   // 네이버 톡톡
+const CODE_TAG = "[구몬진단]";
+
+/* ================= 휴먼컬러 엔진 (만세력 일간) ================= */
+// 1900-01-01 = 甲戌일(60갑자 10번). 날짜 차이로 일주를 구한다.
+function dayPillar(y,m,d){
+  const days = Math.round((Date.UTC(y,m-1,d) - Date.UTC(1900,0,1)) / 86400000);
+  const idx = ((days + 10) % 60 + 60) % 60;
+  return { stem: idx % 10, branch: idx % 12 };
+}
+// 10간 → 12컬러 (무토·기토는 봄여름생/가을겨울생으로 나눔)
+function humanColorKey(y,m,d){
+  const s = dayPillar(y,m,d).stem;
+  const warm = m >= 3 && m <= 8;
+  return ["GAP","EUL","BYEONG","JEONG", warm?"MU_A":"MU_B", warm?"GI_A":"GI_B","GYEONG","SIN","IM","GYE"][s];
+}
+const HC = {
+  GAP:   {name:"포레스트 그린", en:"FOREST GREEN", hex:"#2F6B3F", sym:"곧게 뻗는 큰 나무", one:"목표가 보이면 끝까지 자라나는 '성장 그래프형' 학습자"},
+  EUL:   {name:"세이지 민트", en:"SAGE MINT", hex:"#5E9E88", sym:"꺾이지 않는 덩굴과 꽃", one:"함께하고 칭찬받을 때 쑥쑥 크는 '유연한 스며듦형' 학습자"},
+  BYEONG:{name:"선셋 레드", en:"SUNSET RED", hex:"#E2553B", sym:"모두를 비추는 한낮의 태양", one:"소리 내어 말할 때 폭발하는 '에너지 발산형' 학습자"},
+  JEONG: {name:"캔들 코랄", en:"CANDLE CORAL", hex:"#E77B5C", sym:"어둠을 밝히는 촛불", one:"조용한 자리에서 깊게 파고드는 '몰입 집중형' 학습자"},
+  MU_A:  {name:"테라코타", en:"TERRACOTTA", hex:"#C8693F", sym:"햇볕에 달궈진 큰 산", one:"시동은 느려도 한번 붙으면 꺾이지 않는 '뚝심 엔진형' 학습자"},
+  MU_B:  {name:"마운틴 브라운", en:"MOUNTAIN BROWN", hex:"#7A5A43", sym:"눈 덮인 고요한 산", one:"납득하면 오래 가는 '신중한 마라토너형' 학습자"},
+  GI_A:  {name:"허니 옐로", en:"HONEY YELLOW", hex:"#D9A425", sym:"햇살 가득한 비옥한 밭", one:"쌓이는 게 보일 때 신나는 '차곡차곡 적립형' 학습자"},
+  GI_B:  {name:"샌드 베이지", en:"SAND BEIGE", hex:"#B89E78", sym:"겨울을 견디는 단단한 흙", one:"정해진 분량을 묵묵히 해내는 '체크리스트형' 학습자"},
+  GYEONG:{name:"플래티넘 실버", en:"PLATINUM SILVER", hex:"#7D8793", sym:"단련된 바위와 쇠", one:"기준과 채점이 명확할 때 강해지는 '승부사형' 학습자"},
+  SIN:   {name:"펄 화이트", en:"PEARL WHITE", hex:"#EFEAE1", sym:"빛나는 보석", one:"작은 디테일까지 빛내고 싶은 '섬세한 완성형' 학습자", light:true},
+  IM:    {name:"오션 네이비", en:"OCEAN NAVY", hex:"#1F3A68", sym:"넓은 바다와 큰 강", one:"'왜 배우는지'가 연결되면 깊이 빠지는 '큰 그림형' 학습자"},
+  GYE:   {name:"미스트 블루", en:"MIST BLUE", hex:"#6F9CCB", sym:"조용히 스며드는 이슬비", one:"듣고 따라 하며 스며드는 '감성 흡수형' 학습자"}
+};
+
+/* ================= 질문 ================= */
+const STEPS = [
+  {key:"과목", title:"어떤 공부 습관을\n만들고 싶으세요?", hint:"지금 가장 마음이 가는 것 하나만 골라주세요.", opts:[
+    {code:"일본어", ico:"🇯🇵", label:"성인 일본어", desc:"여행·드라마·자격증, 히라가나부터 다시"},
+    {code:"중국어", ico:"🇨🇳", label:"성인 중국어", desc:"성조가 늘 발목을 잡았다면"},
+    {code:"영어", ico:"🇬🇧", label:"성인 영어", desc:"읽기는 되는데 입이 안 떨어진다면"},
+    {code:"초등자녀", ico:"🎒", label:"초등 자녀 공부습관", desc:"매일 책상에 앉는 습관부터"}]},
+  {key:"병목", title:"공부가 주로\n어디서 멈췄나요?", hint:"독학·인강이 끊겼던 순간을 떠올려 보세요.", opts:[
+    {code:"시작지연", ico:"🛋️", label:"책상 앉기 전에 미뤄요", desc:"'이따 해야지'가 내일이 되는 시작 지연"},
+    {code:"과속번아웃", ico:"🔥", label:"초반 3일만 달려요", desc:"의욕 과속 후 확 꺼지는 번아웃"},
+    {code:"완벽주의", ico:"📐", label:"모르는 게 쌓이면 못 견뎌요", desc:"밀린 진도·틀린 문제가 신경 쓰이는 완벽주의"},
+    {code:"확인부재", ico:"🗣️", label:"맞게 하는지 확인할 사람이 없어요", desc:"발음·성조를 봐줄 사람이 없어 답답함"}]},
+  {key:"시간", title:"하루 10분,\n언제가 가장 확실한가요?", hint:"매일 '반드시' 비는 시간을 골라주세요.", opts:[
+    {code:"아침", ico:"☀️", label:"출근·등교 전 아침", desc:"하루를 시작하기 전 맑은 머리로"},
+    {code:"오후틈새", ico:"🥪", label:"점심·오후 틈새", desc:"점심 후, 오후 업무 사이 자투리"},
+    {code:"저녁식탁", ico:"🍽️", label:"저녁 식탁 (아이 옆자리)", desc:"저녁 정리 후 식탁에서 나란히"},
+    {code:"취침전", ico:"🌙", label:"취침 전 10분", desc:"하루를 닫으며 조용히"}]},
+  {key:"방식", title:"어떤 감각으로\n공부할 때 편한가요?", hint:"손이 기억하는 쪽을 골라주세요.", opts:[
+    {code:"종이", ico:"✏️", label:"손으로 종이에 직접", desc:"연필로 쓰고 지우는 감각이 좋아요 (일반 학습)"},
+    {code:"스마트", ico:"📱", label:"태블릿 + 스마트펜", desc:"음성 듣기·녹음을 함께 쓰고 싶어요 (스마트 학습)"}]},
+  {key:"컬러", final:true, title:"마지막! 나의\n휴먼컬러를 찾을 차례예요", hint:"생년월일로 타고난 기질을, 오늘의 색으로 지금 에너지를 봅니다."}
+];
+const PALETTE = [
+  {code:"레드",hex:"#E03E3E"},{code:"핑크",hex:"#F29BB2"},{code:"옐로",hex:"#F2C94C"},{code:"그린",hex:"#3E9B5F"},
+  {code:"블루",hex:"#3D7DD8"},{code:"퍼플",hex:"#8A5CC7"},{code:"화이트",hex:"#F7F5F0"},{code:"그레이",hex:"#9097A0"}
+];
+
+const MBTI_PAIRS = [["E","외향"],["I","내향"],["S","감각"],["N","직관"],["T","사고"],["F","감정"],["J","판단"],["P","인식"]];
+const HC_MBTI = {GAP:"ENTJ",EUL:"ESFJ",BYEONG:"ENFP",JEONG:"INFJ",MU_A:"ESTJ",MU_B:"INTJ",GI_A:"ISFJ",GI_B:"ISTJ",GYEONG:"ESTP",SIN:"ISFP",IM:"ENTP",GYE:"INFP"};
+const MBTI_NICK = {ISTJ:"체크리스트 장인",ISFJ:"차곡차곡 수호자",INFJ:"깊이 몰입러",INTJ:"원리 설계자",ISTP:"효율 해결사",ISFP:"감각 완성러",INFP:"감성 흡수러",INTP:"호기심 분석가",ESTP:"실전 승부사",ESFP:"무대 체질 학습러",ENFP:"설렘 폭발러",ENTP:"아이디어 탐구자",ESTJ:"루틴 관리자",ESFJ:"함께 크는 학습러",ENFJ:"가르치며 크는 리더",ENTJ:"목표 지휘관"};
+/* ================= 화면 ================= */
+const stage = document.getElementById("stage");
+const topEl = document.getElementById("top");
+const ans = {};
+let cur = -1;
+
+function show(html, dir){
+  const old = stage.querySelector(".screen.on");
+  const el = document.createElement("section");
+  el.className = "screen";
+  el.innerHTML = html;
+  const mount = () => { stage.innerHTML = ""; stage.appendChild(el); el.classList.add("on"); if(dir==="back") el.classList.add("back-in"); window.scrollTo(0,0); };
+  if(old){ old.classList.add("out"); setTimeout(mount, 200); } else mount();
+  return el;
+}
+function setBar(i){
+  topEl.classList.toggle("on", i >= 0 && i < STEPS.length);
+  document.getElementById("stepNo").textContent = `STEP ${i+1} / ${STEPS.length}`;
+  document.getElementById("barFill").style.width = ((i+1)/STEPS.length*100) + "%";
+  document.getElementById("backBtn").disabled = false;
+}
+
+function intro(){
+  cur = -1; setBar(-1);
+  show(`<div class="hero">
+    <span class="badge">학습습관 매니저 도쌤</span>
+    <h1>공부가 멈추는 진짜 이유,<br><em>1분이면</em> 보여요</h1>
+    <div class="hero-art"><span>12가지<br>휴먼컬러</span></div>
+    <p>가르치기 전에 먼저 진단합니다.<br>타고난 학습 기질과 지금의 에너지로<br>나에게 맞는 <b>하루 10분 루틴</b>을 설계해 드려요.</p>
+    <div class="meta"><span>⏱ 1분</span><span>📝 5문항</span><span>🎨 휴먼컬러</span></div>
+    <button class="btn accent" id="start">진단 시작하기</button>
+  </div>`).querySelector("#start").onclick = () => go(0);
+}
+
+function go(i, dir){
+  cur = i; setBar(i);
+  const s = STEPS[i];
+  if(s.final) return finalStep(dir);
+  const el = show(`<div class="q">
+    <h2>${s.title.replace("\n","<br>")}</h2><p class="hint">${s.hint}</p>
+    <div class="opts">${s.opts.map(o=>`
+      <button class="opt${ans[s.key]===o.code?" sel":""}" data-c="${o.code}">
+        <span class="ico">${o.ico}</span><span><b>${o.label}</b><small>${o.desc}</small></span>
+      </button>`).join("")}</div></div>`, dir);
+  el.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    el.querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));
+    b.classList.add("sel");
+    ans[s.key] = b.dataset.c;
+    setTimeout(() => go(i+1), 260);
+  });
+}
+
+function validDate(v){
+  if(!/^\d{8}$/.test(v)) return null;
+  const y=+v.slice(0,4), m=+v.slice(4,6), d=+v.slice(6,8);
+  const dt = new Date(y, m-1, d);
+  if(dt.getFullYear()!==y || dt.getMonth()!==m-1 || dt.getDate()!==d) return null;
+  if(y < 1920 || dt > new Date()) return null;
+  return {y,m,d};
+}
+
+function finalStep(dir){
+  const s = STEPS[cur];
+  const sw = (grp) => PALETTE.map(p=>`<button class="sw" data-g="${grp}" data-c="${p.code}"><i style="background:${p.hex}"></i>${p.code}</button>`).join("");
+  const el = show(`<div class="q">
+    <h2>${s.title.replace("\n","<br>")}</h2><p class="hint">${s.hint}</p>
+    <div class="field">
+      <label for="bd">생년월일 (양력 8자리)</label><span class="lh">예) 1985년 2월 16일 → 19850216</span>
+      <input id="bd" inputmode="numeric" maxlength="8" placeholder="YYYYMMDD" value="${ans["생년월일"]||""}" autocomplete="bday">
+      <div class="err" id="bdErr"></div>
+    </div>
+    <div class="field"><label>오늘 가장 끌리는 색</label><span class="lh">고민하지 말고 눈이 먼저 가는 색</span><div class="pal">${sw("like")}</div></div>
+    <div class="field"><label>오늘 피하고 싶은 색</label><span class="lh">왠지 손이 안 가는 색</span><div class="pal">${sw("avoid")}</div></div>
+    <div class="field"><label>MBTI (선택)</label><span class="lh">알면 골라 주세요 — 휴먼컬러와 함께 더 정밀하게 맞춰 드려요</span>
+      <div class="mbti-grid">${[0,1,2,3].map(i=>`<div class="mbti-col">${[0,1].map(j=>{const [l,k]=MBTI_PAIRS[i*2+j];return `<button class="mb-b" data-i="${i}" data-l="${l}">${l}<small>${k}</small></button>`}).join("")}</div>`).join("")}</div>
+      <button class="mb-skip" id="mbSkip">MBTI를 몰라요 / 건너뛰기</button></div>
+    <button class="btn accent" id="submit" disabled>나의 진단 결과 보기</button>
+  </div>`, dir);
+  const bd = el.querySelector("#bd"), err = el.querySelector("#bdErr"), sub = el.querySelector("#submit");
+  const sync = () => {
+    el.querySelectorAll(".sw").forEach(b=>{
+      const g=b.dataset.g, c=b.dataset.c;
+      b.classList.toggle("sel", (g==="like"?ans["컬러"]:ans["회피"])===c);
+      b.disabled = (g==="like"?ans["회피"]:ans["컬러"])===c;
+    });
+    const ok = validDate(bd.value);
+    err.textContent = bd.value.length===8 && !ok ? "날짜를 다시 확인해 주세요 (예: 19850216)" : "";
+    const mb = ans["MBTI_SEL"] || [];
+    el.querySelectorAll(".mb-b").forEach(b=>b.classList.toggle("sel", mb[+b.dataset.i]===b.dataset.l));
+    el.querySelector("#mbSkip").classList.toggle("sel", ans["MBTI_SKIP"]===true);
+    ans["MBTI"] = mb.filter(Boolean).length===4 ? mb.join("") : "";
+    sub.disabled = !(ok && ans["컬러"] && ans["회피"] && (ans["MBTI"] || ans["MBTI_SKIP"]));
+  };
+  bd.oninput = () => { bd.value = bd.value.replace(/\D/g,""); ans["생년월일"] = bd.value; sync(); };
+  el.querySelectorAll(".sw").forEach(b => b.onclick = () => { ans[b.dataset.g==="like"?"컬러":"회피"] = b.dataset.c; sync(); });
+  el.querySelectorAll(".mb-b").forEach(b => b.onclick = () => { const mb = ans["MBTI_SEL"] || []; mb[+b.dataset.i] = b.dataset.l; ans["MBTI_SEL"] = mb; ans["MBTI_SKIP"] = false; sync(); });
+  el.querySelector("#mbSkip").onclick = () => { ans["MBTI_SEL"] = []; ans["MBTI_SKIP"] = true; sync(); };
+
+  sub.onclick = loading;
+  sync();
+}
+
+function loading(){
+  setBar(STEPS.length); topEl.classList.remove("on");
+  const el = show(`<div class="loading"><div class="spinner"></div><h3>진단서를 설계 중입니다...</h3><p id="lmsg">만세력 일간을 계산하고 있어요</p></div>`);
+  const msgs = ["타고난 학습 기질을 찾고 있어요","에너지 배터리를 측정하고 있어요","하루 10분 루틴을 맞추고 있어요"];
+  msgs.forEach((m,i)=>setTimeout(()=>{ const p=document.getElementById("lmsg"); if(p) p.textContent=m; }, 500*(i+1)));
+  setTimeout(result, 2000);
+}
+
+function buildCode(){
+  return `${CODE_TAG} 과목:${ans["과목"]} / 병목:${ans["병목"]} / 시간:${ans["시간"]} / 방식:${ans["방식"]} / 생년월일:${ans["생년월일"]} / 컬러:${ans["컬러"]} / 회피:${ans["회피"]}${ans["MBTI"]?` / MBTI:${ans["MBTI"]}`:""}`;
+}
+
+function result(){
+  const {y,m,d} = validDate(ans["생년월일"]);
+  const ck = humanColorKey(y,m,d), c = HC[ck];
+  const mt = ans["MBTI"] || HC_MBTI[ck];
+  const mbLine = ans["MBTI"]
+    ? `<p class="mbline">내 MBTI <b>${mt}</b> × ${c.name} = <b>${MBTI_NICK[mt]}</b>형 학습자</p>`
+    : `<p class="mbline">MBTI로 치면 <b>${mt}</b> 결 · ${MBTI_NICK[mt]}</p>`;
+  const sections = ["타고난 학습 기질 · 본질과 강점","현재 에너지 배터리 & 공부가 멈췄던 진짜 원인","도쌤의 하루 10분 맞춤 습관 설계","주간 1:1 화상 코칭 포인트","예상 시작 단계 & 15분 화상 레벨테스트"];
+  const fake = (n) => Array.from({length:n},(_,i)=>`<div class="ln" style="width:${92-(i*13)%40}%"></div>`).join("");
+  const el = show(`<div class="res">
+    <div class="kicker">나의 타고난 휴먼컬러</div>
+    <div class="colorcard${c.light?" light":""}" style="background:linear-gradient(140deg,${c.hex},${shade(c.hex,-28)})">
+      <div class="en">${c.en}</div><h2>${c.name}</h2><div class="sym">${c.sym}</div>
+      <p class="one">${c.one}</p>${mbLine}
+    </div>
+    <div class="locked">
+      <div class="preview">${sections.map((t,i)=>`<div class="sec"><h4>${i+1}. ${t}</h4>${i===1?`<div class="chips"><span></span><span></span><span></span></div>`:""}${fake(3)}</div>`).join("")}</div>
+      <div class="lockover"><div class="lk">🔒</div><b>정밀 진단서 5개 섹션이 잠겨 있어요</b><span>${ans["과목"]==="초등자녀"?"우리 아이":"나"}의 에너지 배터리 %, 첫 달 권장 장수,<br>시간대별 루틴표까지 이미지로 받아보세요.</span></div>
+    </div>
+    <ul class="toc">${sections.map((t,i)=>`<li><em>${i+1}</em>${t}</li>`).join("")}</ul>
+    <button class="btn accent" id="getFull">내 상세 진단서 전체 받기</button>
+    <p class="note">버튼을 누르면 진단코드가 복사되고 도쌤 톡톡 채팅창이 열려요.<br>붙여넣기만 하면 정밀 진단서 이미지를 보내드립니다.</p>
+    <button class="retry" id="retry">처음부터 다시 하기</button>
+  </div>`);
+  el.querySelector("#getFull").onclick = getFull;
+  el.querySelector("#retry").onclick = () => { for(const k in ans) delete ans[k]; intro(); };
+}
+
+/* ================= 복사 & 이동 ================= */
+function copyText(t){
+  // 동기 fallback을 먼저 실행해야 iOS/인앱브라우저에서도 사용자 제스처 안에 복사된다
+  let ok = false;
+  try{
+    const ta = document.createElement("textarea");
+    ta.value = t; ta.setAttribute("readonly",""); ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
+    ok = document.execCommand("copy"); ta.remove();
+  }catch(e){}
+  if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).catch(()=>{});
+  return ok;
+}
+let timer;
+function getFull(){
+  const code = buildCode();
+  copyText(code);
+  document.getElementById("codeBox").textContent = code;
+  document.getElementById("modal").classList.add("on");
+  let n = 3; const cd = document.getElementById("cd");
+  cd.textContent = `(${n})`;
+  clearInterval(timer);
+  timer = setInterval(() => { n--; cd.textContent = n>0?`(${n})`:""; if(n<=0){ clearInterval(timer); location.href = CHAT_URL; } }, 1000);
+}
+document.getElementById("goChat").onclick = () => { clearInterval(timer); location.href = CHAT_URL; };
+document.getElementById("copyAgain").onclick = (e) => { clearInterval(timer); document.getElementById("cd").textContent=""; copyText(buildCode()); e.target.textContent = "복사 완료 ✓"; };
+document.getElementById("modal").onclick = (e) => { if(e.target.id==="modal"){ clearInterval(timer); e.currentTarget.classList.remove("on"); } };
+document.getElementById("backBtn").onclick = () => { if(cur<=0) intro(); else go(cur-1, "back"); };
+
+function shade(hex, amt){
+  const n = parseInt(hex.slice(1),16);
+  const f = v => Math.max(0, Math.min(255, v + amt));
+  return "#" + [f(n>>16), f((n>>8)&255), f(n&255)].map(v=>v.toString(16).padStart(2,"0")).join("");
+}
+
+intro();
+</script>
+</body>
+</html>

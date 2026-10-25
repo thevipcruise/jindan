@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Eclat Passage 크루즈 플래너</title>
+<meta name="description" content="5문항으로 설계하는 나만의 크루즈 — 선사·기항지·선상 스케줄까지">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,500&family=Noto+Serif+KR:wght@600;700&display=swap">
+<style>
+:root{
+  --bg:#F6F2EA; --card:#FFFFFF; --ink:#1B2440; --sub:#6A7084; --line:#E6DFD0;
+  --teal:#0E4D52; --teal-soft:#E2EEEE; --amber:#E8761E; --amber-soft:#FCEEE2; --gold:#C9A24B;
+  --radius:18px; --shadow:0 8px 28px rgba(27,36,64,.09);
+  --serif:"Noto Serif KR",serif; --en:"Cormorant Garamond",serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+body{min-height:100vh;min-height:100dvh;display:flex;justify-content:center}
+.app{width:100%;max-width:480px;padding:0 16px 40px;position:relative;overflow:hidden}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 10px;display:none}
+header.top.on{display:block}
+.toprow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.back{border:0;background:var(--card);width:38px;height:38px;border-radius:12px;box-shadow:var(--shadow);font-size:18px;color:var(--ink);cursor:pointer}
+.stepno{font-family:var(--en);font-size:17px;font-weight:600;color:var(--teal);letter-spacing:.06em}
+.brand{margin-left:auto;font-family:var(--en);font-style:italic;font-size:15px;color:var(--gold)}
+.bar{height:6px;background:#E7E0D1;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--gold),var(--amber));border-radius:99px;transition:width .5s cubic-bezier(.4,1.4,.5,1)}
+.screen{display:none;animation:in .45s cubic-bezier(.2,.8,.2,1) both}
+.screen.on{display:block}
+.screen.out{animation:out .25s ease both}
+.screen.back-in{animation:inb .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
+@keyframes inb{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
+@keyframes out{to{opacity:0;transform:translateX(-36px)}}
+
+/* intro */
+.hero{margin:20px -16px 0;padding:44px 24px 34px;text-align:center;background:radial-gradient(120% 80% at 50% 0%,#14646A 0%,var(--teal) 45%,var(--ink) 100%);color:#fff;border-radius:0 0 32px 32px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;left:-10%;right:-10%;bottom:-40px;height:90px;background:repeating-radial-gradient(circle at 50% -200%,transparent 0 18px,rgba(201,162,75,.18) 19px 20px);opacity:.7}
+.hero .logo{font-family:var(--en);font-style:italic;font-size:22px;color:var(--gold);letter-spacing:.04em}
+.hero .logo small{display:block;font-style:normal;font-family:Pretendard;font-size:11px;letter-spacing:.32em;color:rgba(255,255,255,.7);margin-top:4px}
+.hero h1{font-family:var(--serif);font-size:27px;line-height:1.45;margin:26px 0 12px;letter-spacing:-.01em}
+.hero h1 em{font-style:normal;color:#F3B37A}
+.hero p{color:rgba(255,255,255,.82);line-height:1.65;margin:0;font-size:14.5px;position:relative;z-index:1}
+.intro-body{padding:26px 4px 0;text-align:center}
+.meta{display:flex;justify-content:center;gap:8px;margin-bottom:22px;flex-wrap:wrap}
+.meta span{background:var(--card);border:1px solid var(--line);padding:7px 12px;border-radius:99px;font-size:13px;color:var(--sub)}
+.sig{font-size:13px;color:var(--sub);margin:16px 0 0}
+.sig b{color:var(--teal)}
+.btn{display:block;width:100%;border:0;border-radius:16px;padding:18px;font-size:17px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--ink);color:#fff;box-shadow:0 8px 20px rgba(27,36,64,.25);transition:transform .15s}
+.btn:active{transform:scale(.98)}
+.btn.amber{background:linear-gradient(135deg,#F08A34,var(--amber));box-shadow:0 8px 22px rgba(232,118,30,.35)}
+.btn:disabled{background:#C9C3B6;box-shadow:none;cursor:not-allowed}
+
+.q{padding-top:18px}
+.q h2{font-family:var(--serif);font-size:22px;line-height:1.45;margin:0 0 6px}
+.q .hint{color:var(--sub);font-size:14px;margin:0 0 22px}
+.opts{display:grid;gap:12px}
+.opt{display:flex;align-items:center;gap:14px;text-align:left;width:100%;border:2px solid transparent;background:var(--card);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow);cursor:pointer;font-family:inherit;color:var(--ink);transition:transform .15s,border-color .15s}
+.opt:active{transform:scale(.98)}
+.opt.sel{border-color:var(--gold);background:#FBF6EA}
+.opt .ico{flex:none;width:48px;height:48px;border-radius:14px;background:var(--teal-soft);display:grid;place-items:center;font-size:24px}
+.opt b{display:block;font-size:16.5px;margin-bottom:3px}
+.opt small{display:block;color:var(--sub);font-size:13.5px;line-height:1.45}
+
+.field{background:var(--card);border-radius:var(--radius);padding:18px 16px;box-shadow:var(--shadow);margin-bottom:14px}
+.field label{display:block;font-weight:800;font-size:15px;margin-bottom:4px}
+.field .lh{display:block;color:var(--sub);font-size:13px;margin-bottom:12px}
+.field input{width:100%;font-size:22px;font-family:inherit;font-weight:700;letter-spacing:.12em;padding:14px;border:2px solid var(--line);border-radius:12px;color:var(--ink);background:var(--bg);outline:none;text-align:center}
+.field input:focus{border-color:var(--teal)}
+.err{color:#C2412D;font-size:13px;margin-top:8px;min-height:18px}
+.pal{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.sw{border:0;background:none;padding:0;cursor:pointer;font-family:inherit;color:var(--ink);font-size:12px;font-weight:600;line-height:1.3}
+.sw i{display:block;aspect-ratio:1;border-radius:50%;margin:0 auto 6px;border:3px solid #fff;box-shadow:0 0 0 1px var(--line);transition:transform .15s,box-shadow .15s;position:relative}
+.sw.sel i{transform:scale(1.05);box-shadow:0 0 0 3px var(--gold)}
+.sw.sel i::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:22px;font-weight:900;text-shadow:0 1px 3px rgba(0,0,0,.5)}
+
+.loading{text-align:center;padding-top:28vh}
+.ship{font-size:54px;animation:bob 1.2s ease-in-out infinite;display:inline-block}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-3deg)}}
+.wave{width:160px;height:6px;margin:6px auto 26px;border-radius:99px;background:linear-gradient(90deg,var(--teal),var(--gold),var(--teal));background-size:200% 100%;animation:wv 1s linear infinite}
+@keyframes wv{to{background-position:-200% 0}}
+.loading h3{font-family:var(--serif);font-size:20px;margin:0 0 8px}
+.loading p{color:var(--sub);font-size:14px;margin:0;min-height:20px}
+
+.res{padding-top:28px}
+.res .kicker{font-family:var(--en);font-size:16px;color:var(--gold);text-align:center;font-style:italic}
+.colorcard{margin:12px 0 18px;border-radius:24px;padding:28px 20px 24px;text-align:center;color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.colorcard::before{content:"";position:absolute;inset:10px;border:1px solid rgba(201,162,75,.55);border-radius:18px;pointer-events:none}
+.colorcard .en{font-family:var(--en);font-size:15px;letter-spacing:.2em;opacity:.9}
+.colorcard h2{font-family:var(--serif);font-size:29px;margin:6px 0 4px}
+.colorcard .sym{font-size:14px;opacity:.9}
+.colorcard .one{margin:18px 6px 0;background:rgba(255,255,255,.16);border-radius:14px;padding:14px;font-size:16px;font-weight:700;line-height:1.5}
+.colorcard.light{color:var(--ink)}
+.colorcard.light .one{background:rgba(27,36,64,.07)}
+.locked{position:relative;border-radius:var(--radius);overflow:hidden;background:var(--card);box-shadow:var(--shadow);margin-bottom:18px}
+.preview{padding:20px 18px;filter:blur(5px);user-select:none;pointer-events:none}
+.preview h4{margin:0 0 8px;font-size:15px;color:var(--teal)}
+.preview .ln{height:10px;border-radius:5px;background:#E8E1D2;margin:7px 0}
+.preview .sec{margin-bottom:18px}
+.preview .tbl{display:grid;grid-template-columns:60px 1fr;gap:6px;margin-top:8px}
+.preview .tbl span{height:16px;border-radius:4px;background:var(--teal-soft)}
+.preview .tbl span:nth-child(odd){background:var(--amber-soft)}
+.lockover{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(246,242,234,.15),rgba(246,242,234,.88));text-align:center;padding:20px}
+.lockover .lk{width:56px;height:56px;border-radius:50%;background:var(--teal);color:var(--gold);display:grid;place-items:center;font-size:24px;margin-bottom:12px;border:1px solid var(--gold)}
+.lockover b{font-size:17px;margin-bottom:6px}
+.lockover span{font-size:13.5px;color:var(--sub);line-height:1.5}
+.toc{list-style:none;padding:0;margin:0 0 18px;display:grid;gap:8px}
+.toc li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:14px;display:flex;gap:10px;align-items:center}
+.toc li em{font-style:normal;flex:none;width:24px;height:24px;border-radius:50%;background:var(--teal);color:var(--gold);display:grid;place-items:center;font-weight:800;font-size:12px}
+.toc li::after{content:"🔒";margin-left:auto;font-size:12px}
+.note{font-size:12.5px;color:var(--sub);text-align:center;margin:12px 0 0;line-height:1.5}
+.retry{display:block;margin:16px auto 0;background:none;border:0;color:var(--sub);text-decoration:underline;font-family:inherit;font-size:13px;cursor:pointer}
+
+.mbti-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mbti-col{display:grid;gap:6px}
+.mb-b{border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 0;font-family:inherit;font-size:17px;font-weight:800;color:var(--ink);cursor:pointer}
+.mb-b small{display:block;font-size:10.5px;font-weight:600;color:var(--sub);margin-top:2px}
+.mb-b.sel{border-color:var(--ink);background:var(--ink);color:#fff}
+.mb-b.sel small{color:rgba(255,255,255,.75)}
+.mb-skip{display:block;margin:10px auto 0;background:none;border:0;font-family:inherit;font-size:13px;color:var(--sub);text-decoration:underline;cursor:pointer}
+.mb-skip.sel{color:var(--ink);font-weight:800;text-decoration:none}
+.mbline{margin:12px 0 0;font-size:14px;line-height:1.5;opacity:.95}
+.mbline b{font-size:15px;letter-spacing:.04em}
+.modal{position:fixed;inset:0;background:rgba(15,22,40,.6);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.modal.on{display:flex;animation:fade .2s both}
+@keyframes fade{from{opacity:0}}
+.sheet{width:100%;max-width:480px;background:var(--card);border-radius:24px 24px 0 0;padding:26px 20px calc(24px + env(safe-area-inset-bottom));animation:up .3s cubic-bezier(.2,.8,.2,1) both}
+@keyframes up{from{transform:translateY(40px)}}
+.sheet .ok{width:54px;height:54px;border-radius:50%;background:var(--teal);color:var(--gold);display:grid;place-items:center;font-size:26px;margin:0 auto 14px}
+.sheet h3{text-align:center;font-size:19px;margin:0 0 6px;line-height:1.4}
+.sheet p{text-align:center;color:var(--sub);font-size:14px;margin:0 0 16px;line-height:1.5}
+.code{background:var(--bg);border:1px dashed var(--line);border-radius:12px;padding:12px;font-size:13px;line-height:1.5;word-break:keep-all;margin-bottom:14px;user-select:all}
+.row2{display:grid;grid-template-columns:1fr 1.6fr;gap:10px}
+.btn.ghost{background:var(--bg);color:var(--ink);box-shadow:none;border:1px solid var(--line);font-size:15px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top" id="top">
+    <div class="toprow">
+      <button class="back" id="backBtn" aria-label="이전">←</button>
+      <span class="stepno" id="stepNo">STEP 1 / 5</span>
+      <span class="brand">Eclat Passage</span>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+  </header>
+  <main id="stage"></main>
+</div>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <div class="ok">✓</div>
+    <h3>진단코드가 복사되었습니다!</h3>
+    <p>열리는 채팅창에 <b>붙여넣기</b>만 해주세요.<br>스칼렛이 나만의 크루즈 설계표를 보내드려요.</p>
+    <div class="code" id="codeBox"></div>
+    <div class="row2">
+      <button class="btn ghost" id="copyAgain">다시 복사</button>
+      <button class="btn amber" id="goChat">채팅창 열기 <span id="cd"></span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= 설정 ================= */
+const CHAT_URL = "https://pf.kakao.com/_xxxxxx/chat";   // ← 카카오채널 채팅 링크로 바꿔주세요
+const CODE_TAG = "[크루즈진단]";
+
+/* ================= 휴먼컬러 엔진 (만세력 일간) ================= */
+function dayPillar(y,m,d){
+  const days = Math.round((Date.UTC(y,m-1,d) - Date.UTC(1900,0,1)) / 86400000);
+  const idx = ((days + 10) % 60 + 60) % 60;   // 1900-01-01 = 甲戌
+  return { stem: idx % 10, branch: idx % 12 };
+}
+function humanColorKey(y,m,d){
+  const s = dayPillar(y,m,d).stem;
+  const warm = m >= 3 && m <= 8;
+  return ["GAP","EUL","BYEONG","JEONG", warm?"MU_A":"MU_B", warm?"GI_A":"GI_B","GYEONG","SIN","IM","GYE"][s];
+}
+const HC = {
+  GAP:   {name:"포레스트 그린", en:"Forest Green", hex:"#2F6B3F", sym:"곧게 뻗는 큰 나무", one:"하루 하나의 랜드마크를 정복해야 설레는 '탐험가형' 여행자"},
+  EUL:   {name:"세이지 민트", en:"Sage Mint", hex:"#5E9E88", sym:"꺾이지 않는 덩굴과 꽃", one:"예쁜 골목과 카페를 발견할 때 행복한 '감성 산책형' 여행자"},
+  BYEONG:{name:"선셋 레드", en:"Sunset Red", hex:"#E2553B", sym:"모두를 비추는 한낮의 태양", one:"쇼와 파티로 하루를 꽉 채우는 '선상 분위기 메이커형' 여행자"},
+  JEONG: {name:"캔들 코랄", en:"Candle Coral", hex:"#E77B5C", sym:"어둠을 밝히는 촛불", one:"야경과 디너의 무드를 아는 '로맨틱 나이트형' 여행자"},
+  MU_A:  {name:"테라코타", en:"Terracotta", hex:"#C8693F", sym:"햇볕에 달궈진 큰 산", one:"검증된 명소와 확실한 맛집을 고르는 '든든한 리더형' 여행자"},
+  MU_B:  {name:"마운틴 브라운", en:"Mountain Brown", hex:"#7A5A43", sym:"눈 덮인 고요한 산", one:"이동은 적게, 쉼은 깊게 — '온천·힐링 안정형' 여행자"},
+  GI_A:  {name:"허니 옐로", en:"Honey Yellow", hex:"#D9A425", sym:"햇살 가득한 비옥한 밭", one:"동행 모두의 컨디션을 챙기는 '배려 조율형' 여행자"},
+  GI_B:  {name:"샌드 베이지", en:"Sand Beige", hex:"#B89E78", sym:"겨울을 견디는 단단한 흙", one:"리스트대로 하나씩 채워가는 '플래너형' 여행자"},
+  GYEONG:{name:"플래티넘 실버", en:"Platinum Silver", hex:"#7D8793", sym:"단련된 바위와 쇠", one:"핵심만 빠르게 보는 '효율 동선형' 여행자"},
+  SIN:   {name:"펄 화이트", en:"Pearl White", hex:"#EFEAE1", sym:"빛나는 보석", one:"정찬·스파·포토스팟의 품격을 즐기는 '럭셔리 감각형' 여행자", light:true},
+  IM:    {name:"오션 네이비", en:"Ocean Navy", hex:"#1F3A68", sym:"넓은 바다와 큰 강", one:"먼 바다, 새로운 항로에 끌리는 '대양 항해형' 여행자"},
+  GYE:   {name:"미스트 블루", en:"Mist Blue", hex:"#6F9CCB", sym:"조용히 스며드는 이슬비", one:"발코니에서 바다만 봐도 충전되는 '감성 휴식형' 여행자"}
+};
+
+/* ================= 질문 ================= */
+const STEPS = [
+  {key:"동행", title:"이번 크루즈,\n누구와 함께 떠나시나요?", hint:"동행자의 체력까지 함께 설계해 드려요.", opts:[
+    {code:"부모님", ico:"👵", label:"부모님 효도여행", desc:"칠순·환갑, 걷는 거리는 줄이고 감동은 크게"},
+    {code:"자녀가족", ico:"👨‍👩‍👧", label:"초등 자녀 동반 가족여행", desc:"아이도 어른도 지루할 틈 없이"},
+    {code:"커플", ico:"🥂", label:"부부·커플 낭만 여행", desc:"선셋과 디너, 둘만의 시간"},
+    {code:"친구", ico:"👯", label:"친구들과 우정여행", desc:"맛집·쇼·파티, 추억 몰아 만들기"}]},
+  {key:"일정", title:"일정과 해역은\n어느 쪽이 끌리세요?", hint:"휴가 일수에 맞춰 골라주세요.", opts:[
+    {code:"일본대만", ico:"🗾", label:"4~6일 · 일본·대만 근거리", desc:"고베·사세보·오키나와 등, 부담 없는 첫 크루즈"},
+    {code:"동남아", ico:"🌴", label:"5~7일 · 싱가포르·동남아", desc:"따뜻한 바다, 휴양과 미식"},
+    {code:"지중해알래스카", ico:"🏔️", label:"7일 이상 · 지중해·알래스카", desc:"인생 여행, 버킷리스트 해역"}]},
+  {key:"기항지", title:"배에서 내리면\n어떻게 보내고 싶으세요?", hint:"기항지 반나절 코스의 방향이 정해져요.", opts:[
+    {code:"미식쇼핑", ico:"🛍️", label:"항구 주변 미식·쇼핑·산책", desc:"이동 피로 없이 가볍게"},
+    {code:"역사랜드마크", ico:"🏯", label:"핵심 랜드마크와 역사 투어", desc:"여기까지 왔으면 꼭 봐야 할 곳"},
+    {code:"온천힐링", ico:"♨️", label:"온천·자연·로컬 카페 힐링", desc:"천천히, 깊게 쉬는 하루"}]},
+  {key:"선상", title:"배 위에서는\n어떤 하루가 좋으세요?", hint:"선상 24시간 스케줄표에 반영돼요.", opts:[
+    {code:"쇼액티비티", ico:"🎭", label:"대극장 쇼·풀파티·액티비티", desc:"하루 종일 즐길 거리 가득"},
+    {code:"선셋여유", ico:"🌅", label:"발코니 선셋·스파·정찬", desc:"느긋하고 우아하게"},
+    {code:"키즈가족", ico:"🧸", label:"키즈 시설·가족 체험 중심", desc:"아이가 신나야 부모도 쉰다"}]},
+  {key:"컬러", final:true, title:"마지막! 여행자의\n휴먼컬러를 찾을 차례예요", hint:"대표 여행자의 생년월일로 여행 기질을 봅니다."}
+];
+const PALETTE = [
+  {code:"에메랄드",hex:"#119A7E"},{code:"아쿠아민트",hex:"#7FD6C8"},{code:"사파이어",hex:"#2C5FB3"},{code:"딥네이비",hex:"#1B2440"},
+  {code:"선셋코랄",hex:"#F07A5A"},{code:"샴페인골드",hex:"#D6B46A"},{code:"샌드베이지",hex:"#DCC9A6"},{code:"펄화이트",hex:"#F7F4EE"}
+];
+
+const MBTI_PAIRS = [["E","외향"],["I","내향"],["S","감각"],["N","직관"],["T","사고"],["F","감정"],["J","판단"],["P","인식"]];
+const HC_MBTI = {GAP:"ENTJ",EUL:"ESFJ",BYEONG:"ENFP",JEONG:"INFJ",MU_A:"ESTJ",MU_B:"INTJ",GI_A:"ISFJ",GI_B:"ISTJ",GYEONG:"ESTP",SIN:"ISFP",IM:"ENTP",GYE:"INFP"};
+const MBTI_NICK = {ISTJ:"완벽 일정 설계자",ISFJ:"동행 컨디션 지킴이",INFJ:"의미를 찾는 순례자",INTJ:"전략적 루트 플래너",ISTP:"즉흥 장인 탐험가",ISFP:"감성 포토 수집가",INFP:"나만의 쉼 찾는 여행자",INTP:"이색 테마 탐구자",ESTP:"액티비티 헌터",ESFP:"파티 분위기 메이커",ENFP:"설렘 수집가",ENTP:"새 항로 개척자",ESTJ:"일정 리더",ESFJ:"모두가 행복한 조율가",ENFJ:"추억 연출가",ENTJ:"버킷리스트 정복자"};
+/* ================= 화면 ================= */
+const stage = document.getElementById("stage");
+const topEl = document.getElementById("top");
+const ans = {};
+let cur = -1;
+
+function show(html, dir){
+  const old = stage.querySelector(".screen.on");
+  const el = document.createElement("section");
+  el.className = "screen";
+  el.innerHTML = html;
+  const mount = () => { stage.innerHTML = ""; stage.appendChild(el); el.classList.add("on"); if(dir==="back") el.classList.add("back-in"); window.scrollTo(0,0); };
+  if(old){ old.classList.add("out"); setTimeout(mount, 200); } else mount();
+  return el;
+}
+function setBar(i){
+  topEl.classList.toggle("on", i >= 0 && i < STEPS.length);
+  document.getElementById("stepNo").textContent = `STEP ${i+1} / ${STEPS.length}`;
+  document.getElementById("barFill").style.width = ((i+1)/STEPS.length*100) + "%";
+}
+
+function intro(){
+  cur = -1; setBar(-1);
+  show(`<div class="hero">
+      <div class="logo">Eclat Passage<small>CRUISE PLANNER</small></div>
+      <h1>내 스케줄과 동행자의 체력까지,<br><em>나만의 크루즈</em>를 설계해요</h1>
+      <p>5가지 질문과 여행자 휴먼컬러로<br>선사·선박·기항지·선상 24시간을 맞춰 드립니다.</p>
+    </div>
+    <div class="intro-body">
+      <div class="meta"><span>⏱ 1분</span><span>⚓ 5문항</span><span>🎨 휴먼컬러</span></div>
+      <button class="btn amber" id="start">플래너 시작하기</button>
+      <p class="sig">설계 · <b>크루즈마스터 스칼렛</b></p>
+    </div>`).querySelector("#start").onclick = () => go(0);
+}
+
+function go(i, dir){
+  cur = i; setBar(i);
+  const s = STEPS[i];
+  if(s.final) return finalStep(dir);
+  const el = show(`<div class="q">
+    <h2>${s.title.replace("\n","<br>")}</h2><p class="hint">${s.hint}</p>
+    <div class="opts">${s.opts.map(o=>`
+      <button class="opt${ans[s.key]===o.code?" sel":""}" data-c="${o.code}">
+        <span class="ico">${o.ico}</span><span><b>${o.label}</b><small>${o.desc}</small></span>
+      </button>`).join("")}</div></div>`, dir);
+  el.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    el.querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));
+    b.classList.add("sel");
+    ans[s.key] = b.dataset.c;
+    setTimeout(() => go(i+1), 260);
+  });
+}
+
+function validDate(v){
+  if(!/^\d{8}$/.test(v)) return null;
+  const y=+v.slice(0,4), m=+v.slice(4,6), d=+v.slice(6,8);
+  const dt = new Date(y, m-1, d);
+  if(dt.getFullYear()!==y || dt.getMonth()!==m-1 || dt.getDate()!==d) return null;
+  if(y < 1920 || dt > new Date()) return null;
+  return {y,m,d};
+}
+
+function finalStep(dir){
+  const s = STEPS[cur];
+  const el = show(`<div class="q">
+    <h2>${s.title.replace("\n","<br>")}</h2><p class="hint">${s.hint}</p>
+    <div class="field">
+      <label for="bd">대표 여행자 생년월일 (양력 8자리)</label><span class="lh">예) 1962년 5월 12일 → 19620512</span>
+      <input id="bd" inputmode="numeric" maxlength="8" placeholder="YYYYMMDD" value="${ans["생년월일"]||""}">
+      <div class="err" id="bdErr"></div>
+    </div>
+    <div class="field"><label>지금 가장 끌리는 바다·휴양 컬러</label><span class="lh">떠나고 싶은 바다를 떠올리며 하나만</span>
+      <div class="pal">${PALETTE.map(p=>`<button class="sw" data-c="${p.code}"><i style="background:${p.hex}"></i>${p.code}</button>`).join("")}</div></div>
+    <div class="field"><label>MBTI (선택)</label><span class="lh">알면 골라 주세요 — 휴먼컬러와 함께 더 정밀하게 맞춰 드려요</span>
+      <div class="mbti-grid">${[0,1,2,3].map(i=>`<div class="mbti-col">${[0,1].map(j=>{const [l,k]=MBTI_PAIRS[i*2+j];return `<button class="mb-b" data-i="${i}" data-l="${l}">${l}<small>${k}</small></button>`}).join("")}</div>`).join("")}</div>
+      <button class="mb-skip" id="mbSkip">MBTI를 몰라요 / 건너뛰기</button></div>
+    <button class="btn amber" id="submit" disabled>나만의 크루즈 설계 보기</button>
+  </div>`, dir);
+  const bd = el.querySelector("#bd"), err = el.querySelector("#bdErr"), sub = el.querySelector("#submit");
+  const sync = () => {
+    el.querySelectorAll(".sw").forEach(b=>b.classList.toggle("sel", ans["컬러"]===b.dataset.c));
+    const ok = validDate(bd.value);
+    err.textContent = bd.value.length===8 && !ok ? "날짜를 다시 확인해 주세요 (예: 19620512)" : "";
+    const mb = ans["MBTI_SEL"] || [];
+    el.querySelectorAll(".mb-b").forEach(b=>b.classList.toggle("sel", mb[+b.dataset.i]===b.dataset.l));
+    el.querySelector("#mbSkip").classList.toggle("sel", ans["MBTI_SKIP"]===true);
+    ans["MBTI"] = mb.filter(Boolean).length===4 ? mb.join("") : "";
+    sub.disabled = !(ok && ans["컬러"] && (ans["MBTI"] || ans["MBTI_SKIP"]));
+  };
+  bd.oninput = () => { bd.value = bd.value.replace(/\D/g,""); ans["생년월일"] = bd.value; sync(); };
+  el.querySelectorAll(".sw").forEach(b => b.onclick = () => { ans["컬러"] = b.dataset.c; sync(); });
+  el.querySelectorAll(".mb-b").forEach(b => b.onclick = () => { const mb = ans["MBTI_SEL"] || []; mb[+b.dataset.i] = b.dataset.l; ans["MBTI_SEL"] = mb; ans["MBTI_SKIP"] = false; sync(); });
+  el.querySelector("#mbSkip").onclick = () => { ans["MBTI_SEL"] = []; ans["MBTI_SKIP"] = true; sync(); };
+
+  sub.onclick = loading;
+  sync();
+}
+
+function loading(){
+  topEl.classList.remove("on");
+  show(`<div class="loading"><div class="ship">🛳️</div><div class="wave"></div><h3>진단서를 설계 중입니다...</h3><p id="lmsg">여행자 휴먼컬러를 계산하고 있어요</p></div>`);
+  const msgs = ["동행자와의 여행 호흡을 맞추고 있어요","선사와 선박을 매칭하고 있어요","선상 24시간 스케줄을 짜고 있어요"];
+  msgs.forEach((m,i)=>setTimeout(()=>{ const p=document.getElementById("lmsg"); if(p) p.textContent=m; }, 500*(i+1)));
+  setTimeout(result, 2000);
+}
+
+function buildCode(){
+  return `${CODE_TAG} 동행:${ans["동행"]} / 일정:${ans["일정"]} / 기항지:${ans["기항지"]} / 선상:${ans["선상"]} / 생년월일:${ans["생년월일"]} / 컬러:${ans["컬러"]}${ans["MBTI"]?` / MBTI:${ans["MBTI"]}`:""}`;
+}
+
+function result(){
+  const {y,m,d} = validDate(ans["생년월일"]);
+  const ck = humanColorKey(y,m,d), c = HC[ck];
+  const mt = ans["MBTI"] || HC_MBTI[ck];
+  const mbLine = ans["MBTI"]
+    ? `<p class="mbline">내 MBTI <b>${mt}</b> × ${c.name} = <b>${MBTI_NICK[mt]}</b>형 여행자</p>`
+    : `<p class="mbline">MBTI로 치면 <b>${mt}</b> 결 · ${MBTI_NICK[mt]}</p>`;
+  const sections = ["여행자 휴먼컬러 스타일 & 동행자 체력·호흡 궁합","맞춤 크루즈 선사 & 선박 추천","추천 기항지 & 피로도 0% 반나절 코스","스칼렛의 선상 24시간 황금 스케줄표"];
+  const fake = (n) => Array.from({length:n},(_,i)=>`<div class="ln" style="width:${92-(i*13)%40}%"></div>`).join("");
+  const el = show(`<div class="res">
+    <div class="kicker">Your Traveler Color</div>
+    <div class="colorcard${c.light?" light":""}" style="background:linear-gradient(150deg,${c.hex},${shade(c.hex,-34)})">
+      <div class="en">${c.en.toUpperCase()}</div><h2>${c.name}</h2><div class="sym">${c.sym}</div>
+      <p class="one">${c.one}</p>${mbLine}
+    </div>
+    <div class="locked">
+      <div class="preview">${sections.map((t,i)=>`<div class="sec"><h4>${i+1}. ${t}</h4>${fake(2)}${i===3?`<div class="tbl">${"<span></span>".repeat(10)}</div>`:fake(1)}</div>`).join("")}</div>
+      <div class="lockover"><div class="lk">🔒</div><b>크루즈 설계표 4개 섹션이 잠겨 있어요</b><span>추천 선박, 기항지 반나절 코스,<br>선상 24시간 스케줄표까지 이미지로 받아보세요.</span></div>
+    </div>
+    <ul class="toc">${sections.map((t,i)=>`<li><em>${i+1}</em>${t}</li>`).join("")}</ul>
+    <button class="btn amber" id="getFull">내 상세 진단서 전체 받기</button>
+    <p class="note">버튼을 누르면 진단코드가 복사되고 스칼렛 카카오채널이 열려요.<br>붙여넣기만 하면 크루즈 설계표 이미지를 보내드립니다.</p>
+    <button class="retry" id="retry">처음부터 다시 하기</button>
+  </div>`);
+  el.querySelector("#getFull").onclick = getFull;
+  el.querySelector("#retry").onclick = () => { for(const k in ans) delete ans[k]; intro(); };
+}
+
+function copyText(t){
+  let ok = false;
+  try{
+    const ta = document.createElement("textarea");
+    ta.value = t; ta.setAttribute("readonly",""); ta.style.cssText = "position:fixed;top:0;left:0;opacity:0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
+    ok = document.execCommand("copy"); ta.remove();
+  }catch(e){}
+  if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).catch(()=>{});
+  return ok;
+}
+let timer;
+function getFull(){
+  const code = buildCode();
+  copyText(code);
+  document.getElementById("codeBox").textContent = code;
+  document.getElementById("modal").classList.add("on");
+  let n = 3; const cd = document.getElementById("cd");
+  cd.textContent = `(${n})`;
+  clearInterval(timer);
+  timer = setInterval(() => { n--; cd.textContent = n>0?`(${n})`:""; if(n<=0){ clearInterval(timer); location.href = CHAT_URL; } }, 1000);
+}
+document.getElementById("goChat").onclick = () => { clearInterval(timer); location.href = CHAT_URL; };
+document.getElementById("copyAgain").onclick = (e) => { clearInterval(timer); document.getElementById("cd").textContent=""; copyText(buildCode()); e.target.textContent = "복사 완료 ✓"; };
+document.getElementById("modal").onclick = (e) => { if(e.target.id==="modal"){ clearInterval(timer); e.currentTarget.classList.remove("on"); } };
+document.getElementById("backBtn").onclick = () => { if(cur<=0) intro(); else go(cur-1, "back"); };
+
+function shade(hex, amt){
+  const n = parseInt(hex.slice(1),16);
+  const f = v => Math.max(0, Math.min(255, v + amt));
+  return "#" + [f(n>>16), f((n>>8)&255), f(n&255)].map(v=>v.toString(16).padStart(2,"0")).join("");
+}
+
+intro();
+</script>
+</body>
+</html>
