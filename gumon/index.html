@@ -424,8 +424,12 @@ function loading(){
   setTimeout(result, 2000);
 }
 
+function hcTag(){
+  const {y,m,d} = validDate(ans["생년월일"]); const ck = humanColorKey(y,m,d);
+  return ` / 휴먼컬러:${HC[ck].name}(${ans["MBTI"] || HC_MBTI[ck] + "결"})`;
+}
 function buildCode(){
-  return `${CODE_TAG} 과목:${ans["과목"]} / 목표:${ans["목표"]} / 수준:${ans["수준"]} / 지난시도:${ans["지난시도"]} / 최장:${ans["최장"]} / 병목:${ans["병목"]} / 시간:${ans["시간"]} / 분량:${ans["분량"]} / 방식:${ans["방식"]} / 생년월일:${ans["생년월일"]} / 컬러:${ans["컬러"]} / 회피:${ans["회피"]}${ans["MBTI"]?` / MBTI:${ans["MBTI"]}`:""}`;
+  return `${CODE_TAG} 과목:${ans["과목"]} / 목표:${ans["목표"]} / 수준:${ans["수준"]} / 지난시도:${ans["지난시도"]} / 최장:${ans["최장"]} / 병목:${ans["병목"]} / 시간:${ans["시간"]} / 분량:${ans["분량"]} / 방식:${ans["방식"]} / 생년월일:${ans["생년월일"]} / 컬러:${ans["컬러"]} / 회피:${ans["회피"]}${ans["MBTI"]?` / MBTI:${ans["MBTI"]}`:""}${hcTag()}`;
 }
 
 function result(){

@@ -462,8 +462,12 @@ function loading(){
   setTimeout(result, 2000);
 }
 
+function hcTag(){
+  const {y,m,d} = validDate(ans["생년월일"]); const ck = humanColorKey(y,m,d);
+  return ` / 휴먼컬러:${HC[ck].name}(${ans["MBTI"] || HC_MBTI[ck] + "결"})`;
+}
 function buildCode(){
-  return `${CODE_TAG} 동행:${ans["동행"]} / 해역:${ans["해역"]} / 기간:${ans["기간"]} / 출발:${ans["출발"]} / 객실:${ans["객실"]} / 기항지:${ans["기항지"]} / 선상:${ans["선상"]} / 생년월일:${ans["생년월일"]} / 컬러:${ans["컬러"]}${ans["MBTI"]?` / MBTI:${ans["MBTI"]}`:""}`;
+  return `${CODE_TAG} 동행:${ans["동행"]} / 해역:${ans["해역"]} / 기간:${ans["기간"]} / 출발:${ans["출발"]} / 객실:${ans["객실"]} / 기항지:${ans["기항지"]} / 선상:${ans["선상"]} / 생년월일:${ans["생년월일"]} / 컬러:${ans["컬러"]}${ans["MBTI"]?` / MBTI:${ans["MBTI"]}`:""}${hcTag()}`;
 }
 
 function result(){
