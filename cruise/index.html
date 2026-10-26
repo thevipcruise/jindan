@@ -201,6 +201,10 @@ header.top.on{display:block}
 .code{background:#F3FBFB;border:1px dashed #BFDCDC;border-radius:12px;padding:12px;font-size:13px;line-height:1.5;word-break:keep-all;margin-bottom:14px;user-select:all}
 .row2{display:grid;grid-template-columns:1fr 1.6fr;gap:10px}
 .btn.ghost{background:#F3FBFB;color:var(--ink);box-shadow:none;border:1px solid var(--line);font-size:15px}
+.save-ok{display:flex;gap:9px;align-items:flex-start;text-align:left;font-size:12.5px;line-height:1.55;color:#4B5563;background:#fff;border:1px solid #E3E3E3;border-radius:12px;padding:11px 12px;margin:0 0 12px;cursor:pointer}
+.save-ok input{width:20px;height:20px;flex:none;margin-top:1px}
+.save-ok b{color:#1F2937}
+#getFull:disabled{opacity:.45;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -499,12 +503,14 @@ function result(){
       <div class="lockover"><div class="lk">🔒</div><b>크루즈 설계표 4개 섹션이 잠겨 있어요</b><span>추천 선박과 객실, 출발 시기, 기항지 반나절 코스,<br>선상 24시간 스케줄표까지 이미지로 받아보세요.</span></div>
     </div>
     <ul class="toc">${sections.map((t,i)=>`<li><em>${i+1}</em>${t}</li>`).join("")}</ul>
-    <button class="btn amber" id="getFull">내 상세 진단서 전체 받기</button>
+    <label class="save-ok"><input type="checkbox" id="saveOk"><span><b>응답 저장 동의 (필수)</b> · 고른 내용과 생년월일을 크루즈마스터 스칼렛가 맞춤 결과지를 만들고 상담하는 데 쓰도록 저장합니다. 상담이 끝나면 지체 없이 지우며, 동의하지 않으면 결과지를 받을 수 없어요.</span></label>
+    <button class="btn amber" id="getFull" disabled>내 상세 진단서 전체 받기</button>
     <p class="note">버튼을 누르면 진단코드가 복사되고 스칼렛 카카오채널이 열려요.<br>붙여넣기만 하면 크루즈 설계표 이미지를 보내드립니다.</p>
     <button class="retry" id="retry">처음부터 다시 하기</button>
     ${CREDIT}
   </div>`);
   el.querySelector("#getFull").onclick = getFull;
+  el.querySelector("#saveOk").onchange = e => { el.querySelector("#getFull").disabled = !e.target.checked; };
   el.querySelector("#retry").onclick = () => { for(const k in ans) delete ans[k]; intro(); };
   setTimeout(confetti, 350);
 }
@@ -533,8 +539,18 @@ function copyText(t){
   return ok;
 }
 let timer;
+// 구글 시트 수신기 주소 (sheet/시트연결_안내.md 4단계에서 받은 '웹 앱 URL'). 비어 있으면 보내지 않는다
+const SHEET_URL = "https://script.google.com/macros/s/AKfycby_16aLnmYw8BFRnFpHtBQin95EtMRUK4LNXO1lvMnlAb-RKTAgxtBbxQrlFYgJWAeP/exec";
+let savedCode = "";
+function saveToSheet(code){
+  if(!SHEET_URL || savedCode === code) return;
+  savedCode = code;
+  const src = new URLSearchParams(location.search).get("src") || (document.referrer ? new URL(document.referrer).hostname : "직접");
+  try{ fetch(SHEET_URL, {method:"POST", mode:"no-cors", keepalive:true, headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({code, src})}); }catch(e){}
+}
 function getFull(){
   const code = buildCode();
+  saveToSheet(code);
   copyText(code);
   document.getElementById("codeBox").textContent = code;
   document.getElementById("modal").classList.add("on");
